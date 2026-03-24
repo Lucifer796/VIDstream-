@@ -1,0 +1,1498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STREAMVAULT — Watch Everything</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080a0f;
+    --surface: #0d1117;
+    --card: #111620;
+    --card-hover: #161d2b;
+    --border: rgba(255,255,255,0.06);
+    --accent: #e63946;
+    --accent2: #ff6b6b;
+    --gold: #f4a261;
+    --text: #e8eaf0;
+    --muted: #6b7280;
+    --subtle: #374151;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: default;
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 0 48px;
+    height: 64px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: linear-gradient(to bottom, rgba(8,10,15,0.98) 0%, transparent 100%);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 3px;
+    color: var(--text);
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .logo span { color: var(--accent); }
+
+  .logo-dot {
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-dot {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(230,57,70,0.6); }
+    50% { box-shadow: 0 0 0 6px rgba(230,57,70,0); }
+  }
+
+  .nav-links {
+    display: flex; gap: 32px; align-items: center;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    transition: color 0.2s;
+    position: relative;
+  }
+
+  .nav-links a:hover { color: var(--text); }
+  .nav-links a.active { color: var(--text); }
+  .nav-links a.active::after {
+    content: '';
+    position: absolute;
+    bottom: -4px; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 1px;
+  }
+
+  .nav-right {
+    display: flex; align-items: center; gap: 16px;
+  }
+
+  .search-bar {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 14px;
+    transition: all 0.2s;
+  }
+
+  .search-bar:hover, .search-bar:focus-within {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.15);
+  }
+
+  .search-bar input {
+    background: none; border: none; outline: none;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    width: 180px;
+  }
+
+  .search-bar input::placeholder { color: var(--muted); }
+
+  .search-bar svg { color: var(--muted); flex-shrink: 0; }
+
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 20px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+  }
+
+  .btn-primary:hover { background: var(--accent2); transform: translateY(-1px); }
+
+  .avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--gold));
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 500; font-size: 13px;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+
+  .avatar:hover { transform: scale(1.08); }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    height: 88vh;
+    min-height: 560px;
+    display: flex; align-items: flex-end;
+    padding: 0 48px 80px;
+    overflow: hidden;
+    margin-top: 64px;
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0;
+    background: 
+      linear-gradient(to right, rgba(8,10,15,0.95) 40%, rgba(8,10,15,0.4) 100%),
+      linear-gradient(to top, rgba(8,10,15,0.9) 0%, transparent 50%);
+    z-index: 1;
+  }
+
+  .hero-video-thumb {
+    position: absolute; inset: 0;
+    background: 
+      radial-gradient(ellipse at 70% 40%, rgba(230,57,70,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse at 30% 80%, rgba(244,162,97,0.08) 0%, transparent 50%);
+    z-index: 0;
+  }
+
+  /* Animated film grain */
+  .hero-grain {
+    position: absolute; inset: 0; z-index: 0;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  }
+
+  /* Scene strips - cinematic bars */
+  .scene-strip {
+    position: absolute;
+    right: 0; top: 0; bottom: 0;
+    width: 55%;
+    z-index: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 3px;
+    opacity: 0.7;
+  }
+
+  .scene-cell {
+    background: var(--card);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .scene-cell::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 100%);
+  }
+
+  /* Fake thumbnails with color blocks */
+  .sc1 { background: linear-gradient(160deg, #1a0a1a 0%, #2d0a1a 50%, #0a0d1a 100%); }
+  .sc2 { background: linear-gradient(200deg, #0a1a2d 0%, #0d1a0d 60%, #1a1a0a 100%); }
+  .sc3 { background: linear-gradient(140deg, #1a1a0a 0%, #2d1a0a 40%, #0a0d1a 100%); }
+  .sc4 { background: linear-gradient(180deg, #0d0a1a 0%, #1a0a0d 50%, #0a1a1a 100%); }
+  .sc5 { background: linear-gradient(160deg, #0a1a0a 0%, #1a2d0a 60%, #1a0a1a 100%); }
+  .sc6 { background: linear-gradient(220deg, #1a0d0a 0%, #0a1a2d 50%, #0d1a0d 100%); }
+  .sc7 { background: linear-gradient(170deg, #0a0a1a 0%, #2d1a2d 40%, #0a1a0a 100%); }
+  .sc8 { background: linear-gradient(130deg, #1a1a1a 0%, #0a2d1a 60%, #1a0a0d 100%); }
+
+  .hero-content {
+    position: relative; z-index: 2;
+    max-width: 580px;
+    animation: hero-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  @keyframes hero-in {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(230,57,70,0.15);
+    border: 1px solid rgba(230,57,70,0.3);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 20px;
+  }
+
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(52px, 6vw, 80px);
+    line-height: 0.95;
+    letter-spacing: 2px;
+    margin-bottom: 18px;
+    color: var(--text);
+  }
+
+  .hero-title em {
+    font-style: normal;
+    color: var(--accent);
+    display: block;
+  }
+
+  .hero-meta {
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 16px;
+    font-size: 13px; color: var(--muted);
+  }
+
+  .hero-meta span { display: flex; align-items: center; gap: 4px; }
+  .hero-meta .dot { width: 3px; height: 3px; background: var(--subtle); border-radius: 50%; }
+  .rating { color: var(--gold); font-weight: 500; }
+
+  .hero-desc {
+    font-size: 15px;
+    line-height: 1.7;
+    color: rgba(232,234,240,0.7);
+    margin-bottom: 32px;
+    max-width: 460px;
+  }
+
+  .hero-actions {
+    display: flex; align-items: center; gap: 12px;
+  }
+
+  .btn-play {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 14px 28px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.25s;
+    letter-spacing: 0.3px;
+  }
+
+  .btn-play:hover {
+    background: var(--accent2);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(230,57,70,0.4);
+  }
+
+  .btn-outline {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.07);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 24px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.25s;
+    backdrop-filter: blur(8px);
+  }
+
+  .btn-outline:hover {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.15);
+    transform: translateY(-2px);
+  }
+
+  .hero-thumbnails {
+    position: absolute;
+    right: 48px; bottom: 80px;
+    z-index: 2;
+    display: flex; gap: 10px;
+    align-items: flex-end;
+  }
+
+  .mini-thumb {
+    width: 90px; height: 130px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.25s;
+    position: relative;
+  }
+
+  .mini-thumb:hover { transform: translateY(-8px) scale(1.05); border-color: rgba(255,255,255,0.2); }
+  .mini-thumb:nth-child(2) { width: 100px; height: 145px; }
+
+  .mini-thumb-inner {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+  }
+
+  .mt1 { background: linear-gradient(160deg, #2d1a0a, #1a0d2d); }
+  .mt2 { background: linear-gradient(160deg, #0a2d1a, #1a1a0a); }
+  .mt3 { background: linear-gradient(160deg, #1a0a2d, #2d0a0a); }
+  .mt4 { background: linear-gradient(160deg, #0a1a2d, #0a2d1a); }
+
+  .mini-thumb-label {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 20px 8px 6px;
+    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+    font-size: 9px; color: rgba(255,255,255,0.7);
+    text-align: center;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+  }
+
+  /* MAIN CONTENT */
+  main {
+    padding: 0 48px;
+  }
+
+  /* CATEGORY FILTER */
+  .filter-bar {
+    display: flex; align-items: center; gap: 8px;
+    padding: 32px 0 24px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .filter-bar::-webkit-scrollbar { display: none; }
+
+  .filter-chip {
+    flex-shrink: 0;
+    padding: 7px 18px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.04);
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .filter-chip:hover { border-color: rgba(255,255,255,0.15); color: var(--text); }
+  .filter-chip.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+  }
+
+  /* SECTION */
+  .section { margin-bottom: 52px; }
+
+  .section-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 2px;
+    color: var(--text);
+    display: flex; align-items: center; gap: 10px;
+  }
+
+  .section-title .accent-bar {
+    width: 3px; height: 20px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  .see-all {
+    font-size: 12px; color: var(--muted);
+    text-decoration: none;
+    display: flex; align-items: center; gap: 4px;
+    transition: color 0.2s;
+    cursor: pointer;
+    border: none; background: none; font-family: 'DM Sans', sans-serif;
+  }
+
+  .see-all:hover { color: var(--text); }
+
+  /* CARDS GRID */
+  .cards-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+  }
+
+  .cards-row.wide { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+
+  .card {
+    background: var(--card);
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    group: true;
+    animation: card-in 0.5s ease forwards;
+    opacity: 0;
+  }
+
+  .card:nth-child(1) { animation-delay: 0.05s; }
+  .card:nth-child(2) { animation-delay: 0.1s; }
+  .card:nth-child(3) { animation-delay: 0.15s; }
+  .card:nth-child(4) { animation-delay: 0.2s; }
+  .card:nth-child(5) { animation-delay: 0.25s; }
+  .card:nth-child(6) { animation-delay: 0.3s; }
+
+  @keyframes card-in {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card:hover {
+    transform: translateY(-6px) scale(1.015);
+    border-color: rgba(255,255,255,0.12);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(230,57,70,0.15);
+  }
+
+  .card-thumb {
+    aspect-ratio: 2/3;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card-thumb-inner {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 48px;
+    transition: transform 0.4s ease;
+  }
+
+  .card:hover .card-thumb-inner { transform: scale(1.06); }
+
+  .card-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(8,10,15,0.95) 0%, rgba(8,10,15,0.2) 50%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .card:hover .card-overlay { opacity: 1; }
+
+  .play-btn-circle {
+    width: 52px; height: 52px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    transform: scale(0.7);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 8px 24px rgba(230,57,70,0.5);
+  }
+
+  .card:hover .play-btn-circle { transform: scale(1); }
+
+  .card-badge {
+    position: absolute; top: 10px; left: 10px;
+    background: var(--accent);
+    color: white;
+    font-size: 9px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .card-badge.new { background: #22c55e; }
+  .card-badge.top { background: var(--gold); color: #1a1a0a; }
+
+  .card-progress {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 3px; background: rgba(255,255,255,0.1);
+  }
+
+  .card-progress-bar {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  .card-body { padding: 12px 14px 14px; }
+
+  .card-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 5px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+
+  .card-sub {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; color: var(--muted);
+  }
+
+  .card-sub .dot { width: 2px; height: 2px; background: var(--subtle); border-radius: 50%; }
+  .card-rating { color: var(--gold); }
+
+  /* FEATURED ROW (horizontal scroll) */
+  .featured-scroll {
+    display: flex; gap: 16px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-bottom: 8px;
+    -webkit-mask-image: linear-gradient(to right, black 90%, transparent 100%);
+  }
+
+  .featured-scroll::-webkit-scrollbar { display: none; }
+
+  .featured-card {
+    flex-shrink: 0;
+    width: 320px;
+    background: var(--card);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .featured-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255,255,255,0.12);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+  }
+
+  .featured-thumb {
+    height: 175px;
+    position: relative;
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 60px;
+    transition: transform 0.4s;
+  }
+
+  .featured-card:hover .featured-thumb { transform: scale(1.04); }
+
+  .featured-thumb-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(8,10,15,0.7) 0%, transparent 60%);
+  }
+
+  .featured-body { padding: 14px 16px 16px; }
+
+  .featured-tag {
+    font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+
+  .featured-title {
+    font-size: 16px; font-weight: 500;
+    margin-bottom: 6px; color: var(--text);
+  }
+
+  .featured-meta {
+    font-size: 12px; color: var(--muted);
+    display: flex; gap: 10px; align-items: center;
+  }
+
+  /* LIVE SECTION */
+  .live-card {
+    flex-shrink: 0;
+    width: 280px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--card);
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+  }
+
+  .live-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.4); }
+
+  .live-thumb {
+    height: 158px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 48px;
+    position: relative;
+  }
+
+  .live-badge {
+    position: absolute; top: 10px; left: 10px;
+    background: var(--accent);
+    color: white;
+    font-size: 9px; font-weight: 600;
+    padding: 3px 8px; border-radius: 4px;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    display: flex; align-items: center; gap: 4px;
+  }
+
+  .live-dot {
+    width: 5px; height: 5px;
+    background: white; border-radius: 50%;
+    animation: blink 1.2s ease-in-out infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.2; }
+  }
+
+  .live-viewers {
+    position: absolute; top: 10px; right: 10px;
+    background: rgba(0,0,0,0.6);
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-size: 10px; color: var(--muted);
+    backdrop-filter: blur(4px);
+  }
+
+  .live-body { padding: 12px; }
+  .live-title { font-size: 13px; font-weight: 500; margin-bottom: 4px; }
+  .live-meta { font-size: 11px; color: var(--muted); }
+
+  /* FOOTER */
+  footer {
+    margin-top: 80px;
+    border-top: 1px solid var(--border);
+    padding: 40px 48px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 40px;
+  }
+
+  .footer-brand .logo { font-size: 22px; margin-bottom: 12px; }
+  .footer-desc { font-size: 13px; color: var(--muted); line-height: 1.7; max-width: 240px; }
+
+  .footer-col h4 {
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 14px;
+  }
+
+  .footer-col a {
+    display: block;
+    font-size: 13px; color: rgba(255,255,255,0.5);
+    text-decoration: none; margin-bottom: 8px;
+    transition: color 0.2s;
+  }
+
+  .footer-col a:hover { color: var(--text); }
+
+  .footer-bottom {
+    padding: 20px 48px;
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 12px; color: var(--muted);
+    border-top: 1px solid var(--border);
+  }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s;
+  }
+
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    width: 90%;
+    max-width: 760px;
+    overflow: hidden;
+    transform: scale(0.93) translateY(20px);
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .modal-overlay.open .modal { transform: scale(1) translateY(0); }
+
+  .modal-video {
+    width: 100%; aspect-ratio: 16/9;
+    background: #000;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 80px;
+    position: relative;
+  }
+
+  .video-controls {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 20px 20px 16px;
+    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+  }
+
+  .progress-track {
+    height: 3px; background: rgba(255,255,255,0.2);
+    border-radius: 2px; margin-bottom: 12px;
+    cursor: pointer; position: relative;
+  }
+
+  .progress-fill {
+    height: 100%; background: var(--accent);
+    border-radius: 2px; width: 34%;
+    position: relative; transition: width 0.1s;
+  }
+
+  .progress-fill::after {
+    content: '';
+    position: absolute; right: -5px; top: -4px;
+    width: 11px; height: 11px;
+    background: white; border-radius: 50%;
+    box-shadow: 0 0 0 2px var(--accent);
+  }
+
+  .control-buttons {
+    display: flex; align-items: center; gap: 16px;
+  }
+
+  .ctrl-btn {
+    background: none; border: none; color: white;
+    cursor: pointer; display: flex; align-items: center; padding: 0;
+    transition: opacity 0.2s;
+  }
+
+  .ctrl-btn:hover { opacity: 0.7; }
+  .ctrl-btn.play { color: var(--accent); }
+
+  .time-display { font-size: 12px; color: rgba(255,255,255,0.6); margin-left: 4px; }
+
+  .vol-slider {
+    -webkit-appearance: none; appearance: none;
+    width: 80px; height: 3px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 2px; outline: none; cursor: pointer;
+    margin-left: auto;
+  }
+
+  .vol-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px; height: 12px;
+    background: white; border-radius: 50%; cursor: pointer;
+  }
+
+  .modal-info { padding: 24px; }
+  .modal-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px; letter-spacing: 1px; margin-bottom: 10px;
+  }
+
+  .modal-meta {
+    display: flex; align-items: center; gap: 14px;
+    font-size: 13px; color: var(--muted); margin-bottom: 16px;
+  }
+
+  .modal-desc { font-size: 14px; color: rgba(232,234,240,0.7); line-height: 1.7; margin-bottom: 20px; }
+
+  .modal-actions { display: flex; gap: 10px; }
+
+  .close-btn {
+    position: absolute; top: 16px; right: 16px;
+    width: 36px; height: 36px;
+    background: rgba(0,0,0,0.6);
+    border: none; border-radius: 50%;
+    color: white; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+    z-index: 1;
+  }
+
+  .close-btn:hover { background: rgba(255,255,255,0.15); }
+
+  /* responsive */
+  @media (max-width: 768px) {
+    nav, main, footer, .footer-bottom { padding-left: 20px; padding-right: 20px; }
+    .hero { padding: 0 20px 60px; }
+    .hero-thumbnails { display: none; }
+    .scene-strip { width: 0; }
+    .hero-bg { background: linear-gradient(to bottom, rgba(8,10,15,0.7), rgba(8,10,15,0.95)); }
+    footer { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* thumb colors */
+  .bg1 { background: linear-gradient(135deg, #1e0a2e, #3d0a1e, #1e1a0a); }
+  .bg2 { background: linear-gradient(135deg, #0a1e2e, #0a2e1e, #1e0a0a); }
+  .bg3 { background: linear-gradient(135deg, #2e1a0a, #1e0a2e, #0a1e1e); }
+  .bg4 { background: linear-gradient(135deg, #1e2e0a, #0a1e2e, #2e0a1e); }
+  .bg5 { background: linear-gradient(135deg, #0a2e2e, #2e2e0a, #1e0a1e); }
+  .bg6 { background: linear-gradient(135deg, #2e0a0a, #0a0a2e, #0a2e0a); }
+  .bg7 { background: linear-gradient(135deg, #1e1e2e, #2e1e0a, #0a1e0a); }
+  .bg8 { background: linear-gradient(135deg, #0a0a1e, #1e2e2e, #2e0a0a); }
+  .bg9 { background: linear-gradient(135deg, #2e2e1e, #0a1e1e, #1e0a2e); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">
+    <div class="logo-dot"></div>
+    STREAM<span>VAULT</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#" class="active">Home</a></li>
+    <li><a href="#">Movies</a></li>
+    <li><a href="#">TV Shows</a></li>
+    <li><a href="#">Live</a></li>
+    <li><a href="#">My List</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="search-bar">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input type="text" placeholder="Search titles...">
+    </div>
+    <div class="avatar">JD</div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-video-thumb"></div>
+  <div class="hero-grain"></div>
+  <div class="scene-strip">
+    <div class="scene-cell sc1"></div>
+    <div class="scene-cell sc2"></div>
+    <div class="scene-cell sc3"></div>
+    <div class="scene-cell sc4"></div>
+    <div class="scene-cell sc5"></div>
+    <div class="scene-cell sc6"></div>
+    <div class="scene-cell sc7"></div>
+    <div class="scene-cell sc8"></div>
+  </div>
+  <div class="hero-bg"></div>
+
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span>★</span> Featured Tonight
+    </div>
+    <h1 class="hero-title">
+      The Last<br>
+      <em>Frontier</em>
+    </h1>
+    <div class="hero-meta">
+      <span class="rating">★ 9.1</span>
+      <span class="dot"></span>
+      <span>2024</span>
+      <span class="dot"></span>
+      <span>2h 18m</span>
+      <span class="dot"></span>
+      <span>Sci-Fi · Thriller</span>
+    </div>
+    <p class="hero-desc">A lone explorer discovers a signal from beyond the known universe, unraveling secrets that could reshape humanity's understanding of existence itself.</p>
+    <div class="hero-actions">
+      <button class="btn-play" onclick="openModal('The Last Frontier', '2h 18m', '2024', 'A lone explorer discovers a signal from beyond the known universe, unraveling secrets that could reshape humanity\'s understanding of existence itself.')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <polygon points="5,3 19,12 5,21"/>
+        </svg>
+        Watch Now
+      </button>
+      <button class="btn-outline">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>
+        </svg>
+        More Info
+      </button>
+    </div>
+  </div>
+
+  <div class="hero-thumbnails">
+    <div class="mini-thumb mt1" onclick="openModal('Dark Matter','1h 45m','2024','When the boundaries of reality collapse, one physicist must navigate parallel worlds to find the truth.')">
+      <div class="mini-thumb-inner bg1">🌌</div>
+      <div class="mini-thumb-label">DARK MATTER</div>
+    </div>
+    <div class="mini-thumb mt2" onclick="openModal('Verdant','2h 02m','2024','In a dying world, a botanist discovers plants that hold the key to reversing extinction.')">
+      <div class="mini-thumb-inner bg2">🌿</div>
+      <div class="mini-thumb-label">VERDANT</div>
+    </div>
+    <div class="mini-thumb mt3" onclick="openModal('Neon Pulse','1h 58m','2023','A detective chases ghosts through a city where memories can be bought and sold.')">
+      <div class="mini-thumb-inner bg3">🏙️</div>
+      <div class="mini-thumb-label">NEON PULSE</div>
+    </div>
+    <div class="mini-thumb mt4" onclick="openModal('Ocean Depths','2h 30m','2024','The ocean holds secrets older than civilization — and something down there is awake.')">
+      <div class="mini-thumb-inner bg4">🌊</div>
+      <div class="mini-thumb-label">OCEAN DEPTHS</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<main>
+
+  <!-- FILTER -->
+  <div class="filter-bar">
+    <button class="filter-chip active">All</button>
+    <button class="filter-chip">Action</button>
+    <button class="filter-chip">Sci-Fi</button>
+    <button class="filter-chip">Drama</button>
+    <button class="filter-chip">Thriller</button>
+    <button class="filter-chip">Comedy</button>
+    <button class="filter-chip">Horror</button>
+    <button class="filter-chip">Documentary</button>
+    <button class="filter-chip">Animation</button>
+    <button class="filter-chip">Romance</button>
+  </div>
+
+  <!-- CONTINUE WATCHING -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">
+        <div class="accent-bar"></div>
+        Continue Watching
+      </div>
+      <button class="see-all">View All →</button>
+    </div>
+    <div class="featured-scroll">
+      <!-- Featured Continue Cards -->
+      <div class="featured-card" onclick="openModal('Neon Pulse','1h 58m','2023','A detective chases ghosts through a city where memories can be bought and sold.')">
+        <div class="featured-thumb bg3">🏙️
+          <div class="featured-thumb-overlay"></div>
+        </div>
+        <div class="card-progress" style="position:relative; margin: 0; height: 3px; background: rgba(255,255,255,0.1); border-radius:0;">
+          <div class="card-progress-bar" style="width:62%"></div>
+        </div>
+        <div class="featured-body">
+          <div class="featured-tag">Sci-Fi · Noir</div>
+          <div class="featured-title">Neon Pulse</div>
+          <div class="featured-meta"><span>★ 8.7</span><span>·</span><span>62% watched</span><span>·</span><span>48m left</span></div>
+        </div>
+      </div>
+      <div class="featured-card" onclick="openModal('Kingdom of Ash','S2 E4','2024','An ancient kingdom faces its darkest hour as allies crumble and an enemy rises from the east.')">
+        <div class="featured-thumb bg5">🔥
+          <div class="featured-thumb-overlay"></div>
+        </div>
+        <div class="card-progress" style="position:relative; margin: 0; height: 3px; background: rgba(255,255,255,0.1); border-radius:0;">
+          <div class="card-progress-bar" style="width:28%"></div>
+        </div>
+        <div class="featured-body">
+          <div class="featured-tag">Fantasy · Epic</div>
+          <div class="featured-title">Kingdom of Ash</div>
+          <div class="featured-meta"><span>★ 9.0</span><span>·</span><span>S2 E4</span><span>·</span><span>38m left</span></div>
+        </div>
+      </div>
+      <div class="featured-card" onclick="openModal('Static Signal','1h 22m','2023','A radio host begins receiving transmissions from someone who should be dead.')">
+        <div class="featured-thumb bg7">📡
+          <div class="featured-thumb-overlay"></div>
+        </div>
+        <div class="card-progress" style="position:relative; margin: 0; height: 3px; background: rgba(255,255,255,0.1); border-radius:0;">
+          <div class="card-progress-bar" style="width:80%"></div>
+        </div>
+        <div class="featured-body">
+          <div class="featured-tag">Mystery · Thriller</div>
+          <div class="featured-title">Static Signal</div>
+          <div class="featured-meta"><span>★ 8.2</span><span>·</span><span>80% watched</span><span>·</span><span>16m left</span></div>
+        </div>
+      </div>
+      <div class="featured-card" onclick="openModal('Pale Blue','2h 05m','2024','Earth\'s last astronaut navigates the loneliness of deep space on humanity\'s most critical mission.')">
+        <div class="featured-thumb bg8">🚀
+          <div class="featured-thumb-overlay"></div>
+        </div>
+        <div class="card-progress" style="position:relative; margin: 0; height: 3px; background: rgba(255,255,255,0.1); border-radius:0;">
+          <div class="card-progress-bar" style="width:45%"></div>
+        </div>
+        <div class="featured-body">
+          <div class="featured-tag">Sci-Fi · Drama</div>
+          <div class="featured-title">Pale Blue</div>
+          <div class="featured-meta"><span>★ 8.9</span><span>·</span><span>45% watched</span><span>·</span><span>1h 8m left</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRENDING -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">
+        <div class="accent-bar"></div>
+        Trending Now
+      </div>
+      <button class="see-all">See All →</button>
+    </div>
+    <div class="cards-row">
+      <div class="card" onclick="openModal('Iron Meridian','2h 12m','2024','When a superstructure spanning two continents collapses, three engineers race to uncover the sabotage.')">
+        <div class="card-thumb">
+          <div class="card-thumb-inner bg1">🏗️</div>
+          <div class="card-badge top">TOP 10</div>
+          <div class="card-overlay">
+            <div class="play-btn-circle">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-title">Iron Meridian</div>
+          <div class="card-sub">
+            <span class="card-rating">★ 8.4</span>
+            <span class="dot"></span>
+            <span>Action</span>
+            <span class="dot"></span>
+            <span>2024</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" onclick="openModal('Verdant','2h 02m','2024','In a dying world, a botanist discovers plants that hold the key to reversing extinction.')">
+        <div class="card-thumb">
+          <div class="card-thumb-inner bg2">🌿</div>
+          <div class="card-badge new">NEW</div>
+          <div class="card-overlay">
+            <div class="play-btn-circle">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-title">Verdant</div>
+          <div class="card-sub">
+            <span class="card-rating">★ 9.2</span>
+            <span class="dot"></span>
+            <span>Drama</span>
+            <span class="dot"></span>
+            <span>2024</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" onclick="openModal('Laughing Matter','1h 45m','2024','Five comedians share a stage — and a dark secret that binds them beyond the spotlight.')">
+        <div class="card-thumb">
+          <div class="card-thumb-inner bg6">🎭</div>
+          <div class="card-overlay">
+            <div class="play-btn-circle">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-title">Laughing Matter</div>
+          <div class="card-sub">
+            <span class="card-rating">★ 7.8</span>
+            <span class="dot"></span>
+            <span>Comedy</span>
+            <span class="dot"></span>
+            <span>2024</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" onclick="openModal('Ocean Depths','2h 30m','2024','The ocean holds secrets older than civilization — and something down there is awake.')">
+        <div class="card-thumb">
+          <div class="card-thumb-inner bg4">🌊</div>
+          <div class="card-badge top">TOP 5</div>
+          <div class="card-overlay">
+            <div class="play-btn-circle">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-title">Ocean Depths</div>
+          <div class="card-sub">
+            <span class="card-rating">★ 8.6</span>
+            <span class="dot"></span>
+            <span>Horror</span>
+            <span class="dot"></span>
+            <span>2024</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" onclick="openModal('Meridian Falls','1h 38m','2023','A reclusive painter begins seeing visions of events that haven\'t happened yet.')">
+        <div class="card-thumb">
+          <div class="card-thumb-inner bg9">🎨</div>
+          <div class="card-overlay">
+            <div class="play-btn-circle">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-title">Meridian Falls</div>
+          <div class="card-sub">
+            <span class="card-rating">★ 8.1</span>
+            <span class="dot"></span>
+            <span>Mystery</span>
+            <span class="dot"></span>
+            <span>2023</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" onclick="openModal('Dark Matter','1h 45m','2024','When the boundaries of reality collapse, one physicist must navigate parallel worlds to find the truth.')">
+        <div class="card-thumb">
+          <div class="card-thumb-inner bg1">🌌</div>
+          <div class="card-badge new">NEW</div>
+          <div class="card-overlay">
+            <div class="play-btn-circle">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-title">Dark Matter</div>
+          <div class="card-sub">
+            <span class="card-rating">★ 9.0</span>
+            <span class="dot"></span>
+            <span>Sci-Fi</span>
+            <span class="dot"></span>
+            <span>2024</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIVE NOW -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">
+        <div class="accent-bar"></div>
+        Live Now
+      </div>
+      <button class="see-all">All Channels →</button>
+    </div>
+    <div class="featured-scroll">
+      <div class="live-card" onclick="openModal('Champions League Final','LIVE','Tonight','The biggest match in club football — live from Munich.')">
+        <div class="live-thumb bg5">⚽
+          <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+          <div class="live-viewers">👁 241K</div>
+        </div>
+        <div class="live-body">
+          <div class="live-title">Champions League Final</div>
+          <div class="live-meta">Sports · Football · Full Match</div>
+        </div>
+      </div>
+      <div class="live-card" onclick="openModal('Tech Uncovered','LIVE','Tonight','Breaking down the latest AI announcements live with expert commentary.')">
+        <div class="live-thumb bg6">💻
+          <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+          <div class="live-viewers">👁 18K</div>
+        </div>
+        <div class="live-body">
+          <div class="live-title">Tech Uncovered</div>
+          <div class="live-meta">Technology · Talk Show</div>
+        </div>
+      </div>
+      <div class="live-card" onclick="openModal('Studio Jam','LIVE','Tonight','Live music session from Brooklyn — indie artists performing unreleased tracks.')">
+        <div class="live-thumb bg2">🎵
+          <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+          <div class="live-viewers">👁 54K</div>
+        </div>
+        <div class="live-body">
+          <div class="live-title">Studio Jam</div>
+          <div class="live-meta">Music · Live Performance</div>
+        </div>
+      </div>
+      <div class="live-card" onclick="openModal('Night Kitchen','LIVE','Tonight','Award-winning chef prepares a 12-course tasting menu in real time.')">
+        <div class="live-thumb bg3">🍳
+          <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+          <div class="live-viewers">👁 7.2K</div>
+        </div>
+        <div class="live-body">
+          <div class="live-title">Night Kitchen</div>
+          <div class="live-meta">Lifestyle · Cooking</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CRITICALLY ACCLAIMED -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">
+        <div class="accent-bar"></div>
+        Critically Acclaimed
+      </div>
+      <button class="see-all">See All →</button>
+    </div>
+    <div class="cards-row wide">
+      <div class="card" onclick="openModal('The Architect','2h 45m','2024','A visionary architect must choose between his magnum opus and the truth buried in its foundations.')">
+        <div class="card-thumb">
+          <div class="card-thumb-inner bg7" style="font-size:56px;">🏛️</div>
+          <div class="card-overlay">
+            <div class="play-btn-circle">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-title">The Architect</div>
+          <div class="card-sub">
+            <span class="card-rating">★ 9.4</span>
+            <span class="dot"></span>
+            <span>Drama</span>
+            <span class="dot"></span>
+            <span>2024</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" onclick="openModal('Borrowed Time','1h 52m','2023','Two strangers from opposite worlds share one impossible afternoon that changes everything.')">
+        <div class="card-thumb">
+          <div class="card-thumb-inner bg9" style="font-size:56px;">⏳</div>
+          <div class="card-overlay">
+            <div class="play-btn-circle">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-title">Borrowed Time</div>
+          <div class="card-sub">
+            <span class="card-rating">★ 8.9</span>
+            <span class="dot"></span>
+            <span>Romance</span>
+            <span class="dot"></span>
+            <span>2023</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" onclick="openModal('Frequency','2h 08m','2024','A linguist decodes an alien transmission — and learns some messages were never meant for humanity.')">
+        <div class="card-thumb">
+          <div class="card-thumb-inner bg8" style="font-size:56px;">📻</div>
+          <div class="card-overlay">
+            <div class="play-btn-circle">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-title">Frequency</div>
+          <div class="card-sub">
+            <span class="card-rating">★ 9.1</span>
+            <span class="dot"></span>
+            <span>Sci-Fi</span>
+            <span class="dot"></span>
+            <span>2024</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" onclick="openModal('Ember & Frost','2h 22m','2024','A lone survivor of a firestorm piece together what happened — and who started it.')">
+        <div class="card-thumb">
+          <div class="card-thumb-inner bg6" style="font-size:56px;">❄️</div>
+          <div class="card-overlay">
+            <div class="play-btn-circle">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-title">Ember & Frost</div>
+          <div class="card-sub">
+            <span class="card-rating">★ 8.7</span>
+            <span class="dot"></span>
+            <span>Thriller</span>
+            <span class="dot"></span>
+            <span>2024</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">
+    <div class="logo"><div class="logo-dot"></div>STREAM<span>VAULT</span></div>
+    <p class="footer-desc">Your universe of entertainment. Watch what moves you, wherever you are.</p>
+  </div>
+  <div class="footer-col">
+    <h4>Explore</h4>
+    <a href="#">Movies</a>
+    <a href="#">TV Shows</a>
+    <a href="#">Live TV</a>
+    <a href="#">Documentaries</a>
+    <a href="#">Kids</a>
+  </div>
+  <div class="footer-col">
+    <h4>Account</h4>
+    <a href="#">My Profile</a>
+    <a href="#">Watchlist</a>
+    <a href="#">Downloads</a>
+    <a href="#">Settings</a>
+    <a href="#">Help Center</a>
+  </div>
+  <div class="footer-col">
+    <h4>Company</h4>
+    <a href="#">About Us</a>
+    <a href="#">Careers</a>
+    <a href="#">Press</a>
+    <a href="#">Privacy Policy</a>
+    <a href="#">Terms of Service</a>
+  </div>
+</footer>
+<div class="footer-bottom">
+  <span>© 2024 StreamVault Inc. All rights reserved.</span>
+  <span>🇮🇳 India · English</span>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" onclick="closeModalOnOverlay(event)">
+  <div class="modal">
+    <div class="modal-video" id="modal-thumb">
+      <span id="modal-emoji">🎬</span>
+      <div class="video-controls">
+        <div class="progress-track" onclick="scrub(event)">
+          <div class="progress-fill" id="progress"></div>
+        </div>
+        <div class="control-buttons">
+          <button class="ctrl-btn" onclick="skip(-10)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.72"/>
+              <text x="8" y="16" font-size="6" fill="currentColor" stroke="none">10</text>
+            </svg>
+          </button>
+          <button class="ctrl-btn play" id="play-btn" onclick="togglePlay()">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" id="play-icon">
+              <rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>
+            </svg>
+          </button>
+          <button class="ctrl-btn" onclick="skip(10)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.49-3.72"/>
+              <text x="8" y="16" font-size="6" fill="currentColor" stroke="none">10</text>
+            </svg>
+          </button>
+          <span class="time-display" id="time-display">34:12 / 1:58:00</span>
+          <input type="range" class="vol-slider" value="80" oninput="setVol(this.value)">
+          <button class="ctrl-btn" onclick="closeModal()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/>
+              <line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <button class="close-btn" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-info">
+      <h2 class="modal-title" id="modal-title">The Last Frontier</h2>
+      <div class="modal-meta">
+        <span class="rating">★ 9.1</span>
+        <span>·</span>
+        <span id="modal-duration">2h 18m</span>
+        <span>·</span>
+        <span id="modal-year">2024</span>
+        <span>·</span>
+        <span>HD · 4K</span>
+      </div>
+      <p class="modal-desc" id="modal-desc">A lone explorer discovers a signal from beyond the known universe.</p>
+      <div class="modal-actions">
+        <button class="btn-play" style="padding:10px 20px; font-size:13px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+          Resume
+        </button>
+        <button class="btn-outline" style="padding:10px 18px; font-size:13px;">+ Watchlist</button>
+        <button class="btn-outline" style="padding:10px 18px; font-size:13px;">↗ Share</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Filter chips
+  document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+    });
+  });
+
+  // Modal logic
+  const emojis = {'The Last Frontier':'🌌','Dark Matter':'🌌','Verdant':'🌿','Neon Pulse':'🏙️','Ocean Depths':'🌊','Iron Meridian':'🏗️','Kingdom of Ash':'🔥','Static Signal':'📡','Pale Blue':'🚀','Laughing Matter':'🎭','Meridian Falls':'🎨','The Architect':'🏛️','Borrowed Time':'⏳','Frequency':'📻','Ember & Frost':'❄️','Champions League Final':'⚽','Tech Uncovered':'💻','Studio Jam':'🎵','Night Kitchen':'🍳'};
+  const bgs = {'The Last Frontier':'bg1','Dark Matter':'bg1','Verdant':'bg2','Neon Pulse':'bg3','Ocean Depths':'bg4','Iron Meridian':'bg5','Kingdom of Ash':'bg5','Static Signal':'bg7','Pale Blue':'bg8','Laughing Matter':'bg6','Meridian Falls':'bg9','The Architect':'bg7','Borrowed Time':'bg9','Frequency':'bg8','Ember & Frost':'bg6','Champions League Final':'bg5','Tech Uncovered':'bg6','Studio Jam':'bg2','Night Kitchen':'bg3'};
+
+  let isPlaying = true;
+  let progressVal = 34;
+
+  function openModal(title, duration, year, desc) {
+    document.getElementById('modal-title').textContent = title;
+    document.getElementById('modal-duration').textContent = duration;
+    document.getElementById('modal-year').textContent = year;
+    document.getElementById('modal-desc').textContent = desc;
+    const emoji = emojis[title] || '🎬';
+    const bg = bgs[title] || 'bg1';
+    document.getElementById('modal-emoji').textContent = emoji;
+    const thumb = document.getElementById('modal-thumb');
+    thumb.className = 'modal-video ' + bg;
+    document.getElementById('modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    isPlaying = true;
+    updatePlayIcon();
+  }
+
+  function closeModal() {
+    document.getElementById('modal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function closeModalOnOverlay(e) {
+    if (e.target === document.getElementById('modal')) closeModal();
+  }
+
+  function togglePlay() {
+    isPlaying = !isPlaying;
+    updatePlayIcon();
+  }
+
+  function updatePlayIcon() {
+    const icon = document.getElementById('play-icon');
+    icon.innerHTML = isPlaying
+      ? '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>'
+      : '<polygon points="5,3 19,12 5,21"/>';
+  }
+
+  function skip(secs) {
+    progressVal = Math.max(0, Math.min(100, progressVal + secs / 1.18));
+    document.getElementById('progress').style.width = progressVal + '%';
+  }
+
+  function scrub(e) {
+    const track = e.currentTarget;
+    const rect = track.getBoundingClientRect();
+    progressVal = ((e.clientX - rect.left) / rect.width) * 100;
+    document.getElementById('progress').style.width = progressVal + '%';
+  }
+
+  function setVol(v) { /* volume feedback */ }
+
+  // Keyboard shortcut
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeModal();
+    if (e.key === ' ' && document.getElementById('modal').classList.contains('open')) {
+      e.preventDefault();
+      togglePlay();
+    }
+  });
+
+  // Nav scroll effect
+  window.addEventListener('scroll', () => {
+    const nav = document.querySelector('nav');
+    nav.style.background = window.scrollY > 20
+      ? 'rgba(8,10,15,0.98)'
+      : 'linear-gradient(to bottom, rgba(8,10,15,0.98) 0%, transparent 100%)';
+  });
+</script>
+</body>
+</html>
